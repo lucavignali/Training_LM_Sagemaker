@@ -23,11 +23,6 @@ if __name__ == "__main__":
     parser.add_argument("--learning_rate", type=str, default=5e-5)
     parser.add_argument("--fp16", type=bool, default=True)
 
-    # Push to Hub Parameters
-#    parser.add_argument("--push_to_hub", type=bool, default=True)
-#    parser.add_argument("--hub_model_id", type=str, default=None)
-#    parser.add_argument("--hub_strategy", type=str, default=None)
-#    parser.add_argument("--hub_token", type=str, default=None)
 
     # Data, model, and output directories
     parser.add_argument("--output_data_dir", type=str, default=os.environ["SM_OUTPUT_DATA_DIR"])
@@ -38,16 +33,6 @@ if __name__ == "__main__":
 
     args, _ = parser.parse_known_args()
 
-    # make sure we have required parameters to push
- #   if args.push_to_hub:
- #       if args.hub_strategy is None:
- #           raise ValueError("--hub_strategy is required when pushing to Hub")
- #       if args.hub_token is None:
- #           raise ValueError("--hub_token is required when pushing to Hub")
-
-    # sets hub id if not provided
-#    if args.hub_model_id is None:
-#        args.hub_model_id = args.model_id.replace("/", "--")
 
     # Set up logging
     logger = logging.getLogger(__name__)
@@ -103,11 +88,7 @@ if __name__ == "__main__":
         learning_rate=float(args.learning_rate),
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
-        # push to hub parameters
- #       push_to_hub=args.push_to_hub,
- #       hub_strategy=args.hub_strategy,
- #       hub_model_id=args.hub_model_id,
- #       hub_token=args.hub_token,
+  
     )
 
     # create Trainer instance
@@ -126,9 +107,6 @@ if __name__ == "__main__":
     # evaluate model
     eval_result = trainer.evaluate(eval_dataset=test_dataset)
 
-    # save best model, metrics and create model card
-  #  trainer.create_model_card(model_name=args.hub_model_id)
-  #  trainer.push_to_hub()
 
     # Saves the model to s3 uses os.environ["SM_MODEL_DIR"] to make sure checkpointing works
     trainer.save_model(os.environ["SM_MODEL_DIR"])
